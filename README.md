@@ -1,71 +1,64 @@
 <h1 align="center">
   <img src="https://img.icons8.com/ios-filled/50/FFFFFF/hexagon.png" width="50" height="50" style="filter: brightness(0) invert(1);"/>
   <br/>
-  Hexagon.lua
+  Hexagon Free Project Delta Edition - Script for the Project Delta game in Roblox
 </h1>
 
 <p align="center">
-  <strong>Ultimate Project Delta Dominance Script</strong>
+  <strong>The Ultimate Dominance Script for Roblox</strong>
   <br />
-  Specialized tool designed specifically for Project Delta gameplay enhancement
+  Unleash your power and dominate every game with unparalleled features.
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-2.1.0-brightgreen.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Specialized-Project%20Delta-blue.svg" alt="Project Delta">
+  <img src="https://img.shields.io/badge/Version-2.0.0-brightgreen.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Lua-100%25-blue.svg" alt="Lua">
   <img src="https://img.shields.io/badge/Status-Active-success.svg" alt="Status">
   <img src="https://img.shields.io/badge/Compatibility-60%2BUNC%20%7C%2060%2BSUNC-important.svg" alt="Compatibility">
 </p>
 
-<br>
+---
+
+## ⚡ Features
+
+### 🎯 **Aimbot & Combat**
+- **Perfect Aim**: Advanced prediction and smooth aiming
+- **Field of View Control**: Customizable aim radius
+- **Target Selection**: Priority-based target selection
+
+### 👁 **ESP & Visuals**
+- **Player ESP**: See players through walls with detailed info
+- **Chams & Glow**: Visual enhancements for targets
+- **Items & Box**: Visual enhancements for items and case or box
+
+### 🏃 **Movement & Mobility**
+- **God Mode**: Mode God
+- **Invisibility**: Makes you invisible
+
+### ⚙ **Utilities & Misc**
+- **Auto-Execute**: Script auto-launch on injection
+- **Game Support**: Multi-game compatibility
+- **Customization**: Extensive configuration options
+- **Undetectable**: Advanced anti-detection methods
 
 ---
 
-<div align="center">
+## 🚀 Injection Guide
 
-## ⚡ Project Delta Specialized Features
+### **Supported Injectors**
+Hexagon.lua is compatible with injectors that have **60+ UNC** and **60+ SUNC** certification levels.
 
-</div>
+### **Recommended Injectors:**
+- **Swift** (Recommended)
+- **Zenith** (Premium)
+- **AWP** (Premium)
+- **Xeno** (Free)
+- **Volcano** (Free)
 
-### 🎯 **Advanced Combat System**
-<div align="center">
-- **Smart Aim Assist** - Multiple modes for different combat situations<br>
-- **Dynamic FOV Control** - Adjustable target acquisition area<br>
-- **Raycast Precision** - Accurate hit detection for Project Delta mechanics<br>
-- **Target Prediction** - Advanced enemy movement forecasting
-</div>
-
-### 🏃 **Movement Enhancements**
-<div align="center">
-- **Tactical Blink** - Short-range teleportation for positioning<br>
-- **Speed Modulation** - Customizable movement speed<br>
-- **Advanced Flight** - 3D mobility for map control<br>
-- **Strategic Fakelag** - Network manipulation for tactical advantage
-</div>
-
-### 👁 **Visual Optimization**
-<div align="center">
-- **Viewmodel Control** - Custom camera FOV settings<br>
-- **Project Delta ESP** - Game-specific player tracking<br>
-- **Weapon FOV Adjust** - Optimized weapon view settings<br>
-- **Environment Awareness** - Enhanced visual cues
-</div>
-
-<br>
-
----
-
-<div align="center">
-
-## 🚀 Installation & Injection
-
-### **Supported Injectors (60+ UNC/SUNC)**
-- **Swift Injector** ✅ Recommended
-- **Zenith** ✅ Premium
-- **AWP** ✅ Premium
-- **Xeno** ✅ Free
-- **Volcano** ✅ Free
-
-### **Execution Method**
+### **Step-by-Step Injection:**
+1. **Download** a supported injector with 60+ UNC/SUNC
+2. **Launch** Roblox and your chosen injector
+3. **Execute** the injector with proper permissions
+4. **Copy & Paste** this loadstring:
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hell0zz12/hexagon-roblox/refs/heads/main/Hexagon.lua"))()

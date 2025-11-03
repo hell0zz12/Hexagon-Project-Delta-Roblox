@@ -548,6 +548,7 @@ FOVText.TextColor3 = Color3.fromRGB(255, 255, 255)
 FOVText.TextSize = 16.000
 FOVText.TextStrokeTransparency = 0.830
 
+
 -- Scripts:
 
 local function XSXF_fake_script() -- Time.TimeScript 
@@ -666,6 +667,255 @@ local function IJNRY_fake_script() -- ClickGui.OpenGui
 			clickGui.Visible = not clickGui.Visible
 		end
 	end
+	
+	-- Подключаем обработчик ввода
+	UserInputService.InputBegan:Connect(onInput)
+end
+coroutine.wrap(IJNRY_fake_script)()
+
+-- Система поиска объектов
+local TARGET_NAMES = {
+    "Toolbox",
+    "SportBag",
+    "SmallShippingCrate",
+    "SmallMilitaryBox",
+    "SatchelBag",
+    "MilitaryCrate",
+    "LargeShippingCrate",
+    "MedBag",
+    "LargeABPOPABox"
+}
+
+local highlightedObjects = {}
+local RunService = game:GetService("RunService")
+
+-- Функция для создания градиентной обводки
+local function createGradientHighlight(object)
+    if highlightedObjects[object] then
+        return highlightedObjects[object]
+    end
+    
+    -- Создаем основной BoxHandleAdornment
+    local mainHighlight = Instance.new("BoxHandleAdornment")
+    mainHighlight.Name = "SearchHighlight"
+    mainHighlight.Adornee = object
+    mainHighlight.AlwaysOnTop = true
+    mainHighlight.ZIndex = 10
+    mainHighlight.Size = object:IsA("Model") and object:GetExtentsSize() or object.Size
+    mainHighlight.Color3 = Color3.fromRGB(0, 255, 0)
+    mainHighlight.Transparency = 0.2
+    
+    -- Создаем внешнюю обводку для градиентного эффекта
+    local outlineHighlight = Instance.new("BoxHandleAdornment")
+    outlineHighlight.Name = "SearchOutline"
+    outlineHighlight.Adornee = object
+    outlineHighlight.AlwaysOnTop = true
+    outlineHighlight.ZIndex = 9
+    outlineHighlight.Size = (object:IsA("Model") and object:GetExtentsSize() or object.Size) * 1.1
+    outlineHighlight.Color3 = Color3.fromRGB(255, 255, 0)
+    outlineHighlight.Transparency = 0.5
+    
+    -- Создаем BillboardGui для отображения информации
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "InfoBillboard"
+    billboard.Adornee = object:IsA("Model") and object.PrimaryPart or object
+    billboard.Size = UDim2.new(0, 200, 0, 100)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.AlwaysOnTop = true
+    billboard.MaxDistance = 100
+    
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Name = "NameLabel"
+    nameLabel.Size = UDim2.new(1, 0, 0.4, 0)
+    nameLabel.Position = UDim2.new(0, 0, 0, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nameLabel.TextStrokeTransparency = 0
+    nameLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    nameLabel.Text = object.Name
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextSize = 14
+    nameLabel.Parent = billboard
+    
+    local infoLabel = Instance.new("TextLabel")
+    infoLabel.Name = "InfoLabel"
+    infoLabel.Size = UDim2.new(1, 0, 0.6, 0)
+    infoLabel.Position = UDim2.new(0, 0, 0.4, 0)
+    infoLabel.BackgroundTransparency = 1
+    infoLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+    infoLabel.TextStrokeTransparency = 0
+    infoLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    infoLabel.Font = Enum.Font.Gotham
+    infoLabel.TextSize = 12
+    infoLabel.Parent = billboard
+    
+    -- Размещаем все элементы
+    mainHighlight.Parent = object
+    outlineHighlight.Parent = object
+    billboard.Parent = object:IsA("Model") and object.PrimaryPart or object
+    
+    local highlightData = {
+        main = mainHighlight,
+        outline = outlineHighlight,
+        billboard = billboard,
+        infoLabel = infoLabel
+    }
+    
+    highlightedObjects[object] = highlightData
+    return highlightData
+end
+
+-- Функция для подсчета частей в Inventory
+local function countInventoryParts(model)
+    if not model:IsA("Model") then
+        return 0, 0
+    end
+    
+    local inventory = model:FindFirstChild("Inventory")
+    if not inventory then
+        return 0, 0
+    end
+    
+    local partCount = 0
+    local modelCount = 0
+    
+    for _, item in ipairs(inventory:GetChildren()) do
+        if item:IsA("Part") then
+            partCount = partCount + 1
+        elseif item:IsA("Model") then
+            modelCount = modelCount + 1
+        end
+    end
+    
+    return partCount, modelCount
+end
+
+-- Функция для обновления информации на BillboardGui
+local function updateHighlightInfo(object, highlightData)
+    if not object or not highlightData then
+        return
+    end
+    
+    local partCount, modelCount = countInventoryParts(object)
+    local infoText = ""
+    
+    if partCount > 0 or modelCount > 0 then
+        infoText = string.format("Parts: %d\nModels: %d", partCount, modelCount)
+    else
+        infoText = "Inventory: Empty"
+    end
+    
+    if highlightData.infoLabel then
+        highlightData.infoLabel.Text = infoText
+    end
+end
+
+-- Функция для анимации градиента
+local function animateGradient(highlightData, time)
+    if not highlightData then return end
+    
+    -- Анимация цвета основной подсветки
+    local r = math.sin(time * 2) * 0.5 + 0.5
+    local g = math.cos(time * 3) * 0.5 + 0.5
+    local b = math.sin(time * 4) * 0.5 + 0.5
+    
+    if highlightData.main then
+        highlightData.main.Color3 = Color3.new(r, g, b)
+    end
+    
+    -- Анимация внешней обводки
+    if highlightData.outline then
+        local outlineR = math.cos(time * 2) * 0.5 + 0.5
+        local outlineG = math.sin(time * 3) * 0.5 + 0.5
+        local outlineB = math.cos(time * 4) * 0.5 + 0.5
+        highlightData.outline.Color3 = Color3.new(outlineR, outlineG, outlineB)
+    end
+end
+
+-- Функция для поиска и подсветки объектов
+local function highlightObjects()
+    local foundObjects = {}
+    
+    -- Ищем объекты в Workspace
+    for _, name in ipairs(TARGET_NAMES) do
+        local objects = workspace:GetDescendants()
+        for _, obj in ipairs(objects) do
+            if (obj:IsA("Model") or obj:IsA("Part")) and obj.Name == name then
+                table.insert(foundObjects, obj)
+            end
+        end
+    end
+    
+    -- Удаляем подсветки с объектов, которые больше не существуют или не в списке
+    for object, highlightData in pairs(highlightedObjects) do
+        if not object.Parent or not table.find(foundObjects, object) then
+            if highlightData.main then highlightData.main:Destroy() end
+            if highlightData.outline then highlightData.outline:Destroy() end
+            if highlightData.billboard then highlightData.billboard:Destroy() end
+            highlightedObjects[object] = nil
+        end
+    end
+    
+    -- Создаем подсветки для найденных объектов
+    for _, obj in ipairs(foundObjects) do
+        local highlightData = createGradientHighlight(obj)
+        updateHighlightInfo(obj, highlightData)
+    end
+    
+    return #foundObjects
+end
+
+-- Основной цикл обновления
+local function startUpdateLoop()
+    local time = 0
+    
+    while true do
+        local foundCount = highlightObjects()
+        time = time + 0.1
+        
+        -- Анимируем все подсветки
+        for object, highlightData in pairs(highlightedObjects) do
+            if object and object.Parent then
+                animateGradient(highlightData, time)
+                updateHighlightInfo(object, highlightData)
+            end
+        end
+        
+        wait(1) -- Обновляем каждую секунду
+    end
+end
+
+-- Функция для очистки всех подсветок
+local function clearAllHighlights()
+    for object, highlightData in pairs(highlightedObjects) do
+        if highlightData.main then highlightData.main:Destroy() end
+        if highlightData.outline then highlightData.outline:Destroy() end
+        if highlightData.billboard then highlightData.billboard:Destroy() end
+    end
+    highlightedObjects = {}
+    print("Все подсветки удалены")
+end
+
+-- Запуск скрипта поиска объектов
+wait(2)
+print("Запуск системы поиска объектов...")
+print("Цели: " .. table.concat(TARGET_NAMES, ", "))
+
+-- Запускаем основной цикл
+coroutine.wrap(startUpdateLoop)()
+
+-- Обработчик удаления объектов
+workspace.DescendantRemoving:Connect(function(descendant)
+    if highlightedObjects[descendant] then
+        local highlightData = highlightedObjects[descendant]
+        if highlightData.main then highlightData.main:Destroy() end
+        if highlightData.outline then highlightData.outline:Destroy() end
+        if highlightData.billboard then highlightData.billboard:Destroy() end
+        highlightedObjects[descendant] = nil
+    end
+end)
+
+print("Скрипт поиска активирован с автоматическим обновлением каждую секунду")
 	
 	-- Подключаем обработчик ввода
 	UserInputService.InputBegan:Connect(onInput)

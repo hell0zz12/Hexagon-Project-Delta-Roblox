@@ -1,7 +1,7 @@
 <h1 align="center">
   <img src="https://img.icons8.com/ios-filled/50/FFFFFF/hexagon.png" width="50" height="50" style="filter: brightness(0) invert(1);"/>
   <br/>
-  Hexagon Free - Script for the Project Delta game in Roblox
+  Hexagon PD Free - Script for the Project Delta game in Roblox
 </h1>
 
 <p align="center">
